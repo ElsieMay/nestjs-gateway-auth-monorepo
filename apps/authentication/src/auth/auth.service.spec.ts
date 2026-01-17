@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@proj/core/entities';
+import { User } from '../../../../lib/core/src/entities/user.entity';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { createMockUser } from '@proj/core/tests/fixtures/sample';
+import { createMockUser } from '../../../../lib/core/src/tests/fixtures/sample';
 
 jest.mock('bcrypt');
 

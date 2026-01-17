@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import {
   RegisterDto,
   ValidateUserDto,
-} from '@proj/core/auth/dto/validate-user.dto';
+} from '../../../../lib/core/src/auth/dto/validate-user.dto';
 
 @Controller()
 export class AuthController {

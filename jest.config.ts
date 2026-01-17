@@ -6,7 +6,17 @@ export default {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
-  collectCoverageFrom: ['**/*.(t|j)s'],
+  collectCoverageFrom: [
+    '**/*.(t|j)s',
+    '!**/*.spec.ts',
+    '!**/*.test.ts',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/coverage/**',
+    '!**/*.module.ts',
+    '!**/main.ts',
+    '!**/jest.config.ts',
+  ],
   coverageDirectory: './coverage',
   testRegex: '.*\\.spec\\.ts$',
   projects: [

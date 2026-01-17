@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "imports": {
+    "#proj/core/*": "./lib/core/src/*"
+  },
   "scripts": {
     "build": "nest build",
     "build:gateway": "nest build gateway",
@@ -15,7 +18,8 @@
     "start:gateway": "nest start gateway --watch",
     "start:auth": "nest start authentication --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod:gateway": "node dist/apps/gateway/main",
+    "start:prod:auth": "node dist/apps/authentication/main",
     "lint": "eslint \"{apps,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

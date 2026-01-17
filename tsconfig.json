@@ -4,11 +4,6 @@
     "target": "ES2022",
     "outDir": "./dist",
     "rootDir": "./",
-    "baseUrl": "./",
-    "paths": {
-      "@proj/core/*": ["lib/core/src/*"]
-    },
-    "ignoreDeprecations": "6.0",
     "strict": true,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
