@@ -6,13 +6,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../../../lib/core/src/entities/user.entity';
-
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import {
-  ValidateUserDto,
-  RegisterDto,
-} from '../../../../lib/core/src/auth/dto/validate-user.dto';
+import { RegisterDto } from '../../../../lib/core/src/auth/dto/register-auth.dto';
+import { ValidateUserDto } from '../../../../lib/core/src/auth/dto/validate-user.dto';
+import { LoginDto } from '../../../../lib/core/src/auth/dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -49,6 +47,10 @@ export class AuthService {
       access_token,
       user: userWithoutPassword,
     };
+  }
+
+  async login(loginDto: LoginDto) {
+    return await this.validateUser(loginDto);
   }
 
   async register(registerDto: RegisterDto) {

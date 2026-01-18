@@ -118,4 +118,34 @@ describe('AuthService', () => {
       );
     });
   });
+
+  describe('login', () => {
+    it('should call validateUser with loginDto', async () => {
+      const validateUserSpy = jest
+        .spyOn(service, 'validateUser')
+        .mockResolvedValue({
+          access_token: 'token',
+          user: createMockUser(),
+        });
+
+      const loginDto = { email: 'test@email.com', password: 'password' };
+      const result = await service.login(loginDto);
+
+      expect(validateUserSpy).toHaveBeenCalledWith(loginDto);
+      expect(result).toHaveProperty('access_token');
+      expect(result).toHaveProperty('user');
+    });
+
+    it('should propagate UnauthorizedException from validateUser', async () => {
+      jest
+        .spyOn(service, 'validateUser')
+        .mockRejectedValue(new UnauthorizedException('Invalid credentials'));
+
+      const loginDto = { email: 'wrong@email.com', password: 'wrongpass' };
+
+      await expect(service.login(loginDto)).rejects.toThrow(
+        new UnauthorizedException('Invalid credentials'),
+      );
+    });
+  });
 });

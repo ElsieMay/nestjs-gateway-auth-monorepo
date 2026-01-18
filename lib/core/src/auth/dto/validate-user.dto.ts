@@ -12,27 +12,10 @@ export class ValidateUserDto {
 export class ValidatedUserDto {
   @IsString()
   id: string;
-  @IsEmail()
-  email: string;
-  @IsString()
-  username: string;
-}
 
-export class LoginDto {
-  @IsString()
-  access_token: string;
-  @IsString()
-  user?: ValidatedUserDto;
-}
-
-export class RegisterDto {
   @IsEmail()
   email: string;
 
   @IsString()
   username: string;
-
-  @IsString()
-  @MinLength(6)
-  password: string;
 }
