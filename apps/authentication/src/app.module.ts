@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { User } from '../../../lib/core/src/users-domain/entities/user.entity';
 import { AuthUsersModule } from './users/users.module';
 import { databaseConfig } from '../../../lib/config/database.config';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { databaseConfig } from '../../../lib/config/database.config';
       }),
       inject: [ConfigService],
     }),
+    LoggerModule,
     AuthUsersModule,
     AuthModule,
   ],

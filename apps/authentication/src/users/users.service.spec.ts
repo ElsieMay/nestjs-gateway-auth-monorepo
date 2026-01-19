@@ -1,4 +1,5 @@
 import { TestingModule, Test } from '@nestjs/testing';
+import { PinoLogger } from 'nestjs-pino';
 import { UsersRepository } from '../../../../lib/core/src/users-domain';
 import { UsersService } from './users.service';
 import { Role } from '../../../../lib/core/src/auth-domain/enums/roles.enum';
@@ -6,6 +7,13 @@ import { Role } from '../../../../lib/core/src/auth-domain/enums/roles.enum';
 describe('UsersService', () => {
   let usersService: UsersService;
   let usersRepository: UsersRepository;
+
+  const mockLogger = {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    setContext: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,6 +34,10 @@ describe('UsersService', () => {
             existsByEmail: jest.fn(),
             existsByUsername: jest.fn(),
           },
+        },
+        {
+          provide: PinoLogger,
+          useValue: mockLogger,
         },
       ],
     }).compile();
@@ -58,6 +70,7 @@ describe('UsersService', () => {
 
       expect(result).toEqual(mockUser);
       expect(findByIdSpy).toHaveBeenCalledWith('1');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when user not found', async () => {
@@ -70,6 +83,7 @@ describe('UsersService', () => {
       );
 
       expect(findByIdSpy).toHaveBeenCalledWith('1');
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
   });
 
@@ -93,6 +107,7 @@ describe('UsersService', () => {
 
       expect(result).toEqual(mockUser);
       expect(findByEmailSpy).toHaveBeenCalledWith('test');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should return null when user not found', async () => {
@@ -104,6 +119,7 @@ describe('UsersService', () => {
 
       expect(result).toBeNull();
       expect(findByEmailSpy).toHaveBeenCalledWith('test');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -138,6 +154,7 @@ describe('UsersService', () => {
 
       expect(result).toEqual(mockUsers);
       expect(findAllSpy).toHaveBeenCalled();
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should return an empty array when no users found', async () => {
@@ -149,6 +166,7 @@ describe('UsersService', () => {
 
       expect(result).toEqual([]);
       expect(findAllSpy).toHaveBeenCalled();
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -176,6 +194,7 @@ describe('UsersService', () => {
 
       expect(result).toEqual(mockCreatedUser);
       expect(createSpy).toHaveBeenCalledWith(userData);
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should create a user with default role USER when roles not provided', async () => {
@@ -204,6 +223,7 @@ describe('UsersService', () => {
         ...userData,
         roles: undefined,
       });
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -231,6 +251,7 @@ describe('UsersService', () => {
 
       expect(result).toEqual(mockUpdatedUser);
       expect(updateSpy).toHaveBeenCalledWith('1', userData);
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when user to update not found', async () => {
@@ -247,6 +268,7 @@ describe('UsersService', () => {
       );
 
       expect(updateSpy).toHaveBeenCalledWith('1', userData);
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -275,6 +297,7 @@ describe('UsersService', () => {
       expect(updateSpy).toHaveBeenCalledWith('1', {
         password: 'newHashedPassword123',
       });
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when user to update password not found', async () => {
@@ -289,6 +312,7 @@ describe('UsersService', () => {
       expect(updateSpy).toHaveBeenCalledWith('1', {
         password: 'newHashedPassword123',
       });
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -302,6 +326,7 @@ describe('UsersService', () => {
 
       expect(result).toBeUndefined();
       expect(deleteSpy).toHaveBeenCalledWith('1');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when user to delete not found', async () => {
@@ -314,6 +339,7 @@ describe('UsersService', () => {
       );
 
       expect(deleteSpy).toHaveBeenCalledWith('1');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -327,6 +353,7 @@ describe('UsersService', () => {
 
       expect(result).toBe(true);
       expect(existsByEmailSpy).toHaveBeenCalledWith('test');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should return false if email is not taken', async () => {
@@ -338,6 +365,7 @@ describe('UsersService', () => {
 
       expect(result).toBe(false);
       expect(existsByEmailSpy).toHaveBeenCalledWith('test');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -351,6 +379,7 @@ describe('UsersService', () => {
 
       expect(result).toBe(true);
       expect(existsByUsernameSpy).toHaveBeenCalledWith('user1');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should return false if username is not taken', async () => {
@@ -362,6 +391,7 @@ describe('UsersService', () => {
 
       expect(result).toBe(false);
       expect(existsByUsernameSpy).toHaveBeenCalledWith('user1');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -377,6 +407,7 @@ describe('UsersService', () => {
 
       expect(result).toBe(mockCount);
       expect(getUserCountSpy).toHaveBeenCalled();
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should return zero when there are no users', async () => {
@@ -390,6 +421,7 @@ describe('UsersService', () => {
 
       expect(result).toBe(mockCount);
       expect(getUserCountSpy).toHaveBeenCalled();
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 
@@ -405,6 +437,7 @@ describe('UsersService', () => {
 
       expect(result).toBe(mockCount);
       expect(getUserCountByRoleSpy).toHaveBeenCalledWith(Role.USER);
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should return zero when there are no users with the specified role', async () => {
@@ -418,6 +451,7 @@ describe('UsersService', () => {
 
       expect(result).toBe(mockCount);
       expect(getUserCountByRoleSpy).toHaveBeenCalledWith(Role.ADMIN);
+      expect(mockLogger.info).toHaveBeenCalled();
     });
   });
 });

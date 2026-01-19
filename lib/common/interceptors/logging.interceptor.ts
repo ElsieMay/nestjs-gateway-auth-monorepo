@@ -3,38 +3,43 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  Logger,
 } from '@nestjs/common';
-import { Observable, tap } from 'rxjs';
-import { Request } from 'express';
+import { PinoLogger } from 'nestjs-pino';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  private readonly logger = new Logger(LoggingInterceptor.name);
+  constructor(private readonly logger: PinoLogger) {
+    this.logger.setContext(LoggingInterceptor.name);
+  }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const request = context.switchToHttp().getRequest<Request>();
-    const { method, url, ip } = request;
-    const userAgent = request.get('user-agent') || '';
     const now = Date.now();
-
-    this.logger.log(
-      `Incoming Request: ${method} ${url} - IP: ${ip} - User-Agent: ${userAgent}`,
-    );
-
     return next.handle().pipe(
       tap({
         next: () => {
           const responseTime = Date.now() - now;
-          this.logger.log(`Completed: ${method} ${url} - ${responseTime}ms`);
+          this.logger.info({
+            msg: 'Request Completed',
+            responseTime,
+            context: LoggingInterceptor.name,
+          });
         },
-        error: (error) => {
+        error: (error: Error) => {
           const responseTime = Date.now() - now;
-          this.logger.error(
-            `Error: ${method} ${url} - ${responseTime}ms - Message: ${error}`,
-          );
+          this.logger.error({
+            msg: 'Request Failed',
+            responseTime,
+            error: error instanceof Error ? error.message : String(error),
+            context: LoggingInterceptor.name,
+          });
         },
       }),
     );
+  }
+
+  private sanitizeBody(body: any): any {
+    if (!body || typeof body !== 'object') return body;
   }
 }

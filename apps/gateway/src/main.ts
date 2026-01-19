@@ -8,6 +8,8 @@ import { HttpExceptionFilter } from '../../../lib/common/filters/http-exception.
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useLogger(app.get(Logger));
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -16,7 +18,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalInterceptors(new LoggingInterceptor(app.get(Logger)));
 
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
@@ -52,6 +54,6 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  Logger.error('Failed to start gateway:', error, 'Main');
+  console.error('Failed to start gateway:', error, 'Main');
   process.exit(1);
 });

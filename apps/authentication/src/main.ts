@@ -15,6 +15,8 @@ async function bootstrap() {
     },
   );
 
+  app.useLogger(app.get(Logger));
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -31,5 +33,5 @@ async function bootstrap() {
   );
 }
 bootstrap().catch((err) => {
-  Logger.error('Error starting authentication microservice', err, 'Main');
+  console.error('Error starting authentication microservice', err, 'Main');
 });

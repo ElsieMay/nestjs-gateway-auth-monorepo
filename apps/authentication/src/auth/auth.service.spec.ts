@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { PinoLogger } from 'nestjs-pino';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from '../../../../lib/core/src/users-domain';
 import { createMockUser } from '../../../../lib/core/src/tests/fixtures/sample';
@@ -24,6 +25,13 @@ describe('AuthService', () => {
     sign: jest.fn(),
   };
 
+  const mockLogger = {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    setContext: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -35,6 +43,10 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: mockJwtService,
+        },
+        {
+          provide: PinoLogger,
+          useValue: mockLogger,
         },
       ],
     }).compile();
@@ -70,6 +82,7 @@ describe('AuthService', () => {
       expect(mockUsersRepository.findByEmail).toHaveBeenCalledWith(
         'test@test.com',
       );
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should throw UnauthorizedException for invalid credentials', async () => {
@@ -78,6 +91,7 @@ describe('AuthService', () => {
       await expect(
         service.validateUser({ email: 'test@test.com', password: 'wrong' }),
       ).rejects.toThrow(new UnauthorizedException('Invalid credentials'));
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
 
     it('should throw UnauthorizedException for invalid password', async () => {
@@ -88,6 +102,7 @@ describe('AuthService', () => {
       await expect(
         service.validateUser({ email: 'example@email.com', password: 'wrong' }),
       ).rejects.toThrow(new UnauthorizedException('Invalid credentials'));
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
   });
 
@@ -117,6 +132,7 @@ describe('AuthService', () => {
       expect(mockUsersRepository.findByUsername).toHaveBeenCalledWith(
         'newUser',
       );
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should throw ConflictException if email already exists', async () => {
@@ -130,6 +146,7 @@ describe('AuthService', () => {
           password: 'password',
         }),
       ).rejects.toThrow(new ConflictException('Email already in use'));
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
 
     it('should throw ConflictException if username already exists', async () => {
@@ -144,6 +161,7 @@ describe('AuthService', () => {
           password: 'password',
         }),
       ).rejects.toThrow(new ConflictException('Username already in use'));
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
   });
 
@@ -162,6 +180,7 @@ describe('AuthService', () => {
       expect(validateUserSpy).toHaveBeenCalledWith(loginDto);
       expect(result).toHaveProperty('access_token');
       expect(result).toHaveProperty('user');
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should propagate UnauthorizedException from validateUser', async () => {

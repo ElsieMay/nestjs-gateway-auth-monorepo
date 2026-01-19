@@ -1,5 +1,6 @@
 import { AuthService } from './auth.service';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PinoLogger } from 'nestjs-pino';
 import { ValidateUserDto } from '../../../../lib/core/src/auth-domain/dto/request/validate-user.dto';
 import { LoginDto } from '../../../../lib/core/src/auth-domain/dto/request/login.dto';
 import { RegisterDto } from '../../../../lib/core/src/auth-domain/dto/request/register-auth.dto';
@@ -9,6 +10,14 @@ import { ClientProxy } from '@nestjs/microservices';
 describe('AuthService', () => {
   let service: AuthService;
   let mockClient: ClientProxy;
+  // let logger: jest.Mocked<PinoLogger>;
+
+  const mockLogger = {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    setContext: jest.fn(),
+  };
 
   beforeEach(async () => {
     mockClient = {
@@ -22,10 +31,19 @@ describe('AuthService', () => {
           provide: 'AUTH_SERVICE',
           useValue: mockClient,
         },
+        {
+          provide: PinoLogger,
+          useValue: mockLogger,
+        },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
+    // logger = module.get(PinoLogger);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -51,6 +69,7 @@ describe('AuthService', () => {
 
     expect(sendSpy).toHaveBeenCalledWith('validateUser', credentials);
     expect(result).toEqual(expectedResult);
+    expect(mockLogger.info).toHaveBeenCalled();
   });
 
   it("should call client.send with 'login' and loginDto", async () => {
@@ -72,6 +91,7 @@ describe('AuthService', () => {
 
     expect(sendSpy).toHaveBeenCalledWith('login', mockLoginDto);
     expect(result).toEqual(expectedResult);
+    expect(mockLogger.info).toHaveBeenCalled();
   });
 
   it("should call client.send with 'register' and registerDto", async () => {
@@ -94,6 +114,7 @@ describe('AuthService', () => {
 
     expect(sendSpy).toHaveBeenCalledWith('register', mockRegisterDto);
     expect(result).toEqual(expectedResult);
+    expect(mockLogger.info).toHaveBeenCalled();
   });
 
   it('should handle microservice communication errors for validateUser', async () => {
@@ -107,6 +128,7 @@ describe('AuthService', () => {
         password: 'test',
       }),
     ).rejects.toThrow('Microservice error');
+    expect(mockLogger.info).toHaveBeenCalled();
   });
 
   it('should handle microservice communication errors for login', async () => {
@@ -120,6 +142,7 @@ describe('AuthService', () => {
         password: 'test',
       }),
     ).rejects.toThrow('Connection refused');
+    expect(mockLogger.info).toHaveBeenCalled();
   });
 
   it('should handle microservice communication errors for register', async () => {
@@ -134,5 +157,6 @@ describe('AuthService', () => {
         password: 'test',
       }),
     ).rejects.toThrow('Service unavailable');
+    expect(mockLogger.info).toHaveBeenCalled();
   });
 });

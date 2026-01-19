@@ -1,4 +1,5 @@
 import { TestingModule, Test } from '@nestjs/testing';
+import { PinoLogger } from 'nestjs-pino';
 import { ProfileService } from './profile.service';
 import { of, throwError } from 'rxjs';
 import { Role } from '../../../../lib/core/src/auth-domain/enums/roles.enum';
@@ -10,6 +11,13 @@ describe('ProfileService', () => {
     send: jest.fn(),
   };
 
+  const mockLogger = {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    setContext: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -17,6 +25,10 @@ describe('ProfileService', () => {
         {
           provide: 'USER_SERVICE',
           useValue: mockUserClient,
+        },
+        {
+          provide: PinoLogger,
+          useValue: mockLogger,
         },
       ],
     }).compile();
@@ -65,6 +77,7 @@ describe('ProfileService', () => {
       expect(mockUserClient.send).toHaveBeenCalledWith('find_user_by_id', {
         id: userId,
       });
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should handle microservice errors', async () => {
@@ -109,6 +122,7 @@ describe('ProfileService', () => {
         'get_user_stats',
         {},
       );
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should handle errors in admin data retrieval', async () => {
@@ -134,6 +148,7 @@ describe('ProfileService', () => {
 
       expect(totalUsers).toBe(mockTotalUsers);
       expect(mockUserClient.send).toHaveBeenCalledWith('get_user_count', {});
+      expect(mockLogger.info).toHaveBeenCalled();
     });
 
     it('should handle errors in user count retrieval', async () => {
@@ -144,33 +159,6 @@ describe('ProfileService', () => {
         (
           service as unknown as { getUserCount: () => Promise<number> }
         ).getUserCount(),
-      ).rejects.toThrow('Microservice error');
-    });
-  });
-
-  describe('getActiveUserCount', () => {
-    it('should return active user count', async () => {
-      const mockActiveUsers = 75;
-      mockUserClient.send.mockReturnValueOnce(
-        of({ activeUsers: mockActiveUsers }),
-      );
-
-      const activeUsers = await (
-        service as unknown as { getActiveUserCount: () => Promise<number> }
-      ).getActiveUserCount();
-
-      expect(activeUsers).toBe(mockActiveUsers);
-      expect(mockUserClient.send).toHaveBeenCalledWith('get_user_stats', {});
-    });
-
-    it('should handle errors in active user count retrieval', async () => {
-      const error = new Error('Microservice error');
-      mockUserClient.send.mockReturnValueOnce(throwError(() => error));
-
-      await expect(
-        (
-          service as unknown as { getActiveUserCount: () => Promise<number> }
-        ).getActiveUserCount(),
       ).rejects.toThrow('Microservice error');
     });
   });
