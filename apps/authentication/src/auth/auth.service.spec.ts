@@ -1,46 +1,51 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../../../../lib/core/src/entities/user.entity';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import { UsersRepository } from '../../../../lib/core/src/users-domain';
 import { createMockUser } from '../../../../lib/core/src/tests/fixtures/sample';
+import * as passwordUtil from '../../../../lib/common/utils/password.util';
 
-jest.mock('bcrypt');
+jest.mock('../../../../lib/common/utils/password.util');
 
 describe('AuthService', () => {
   let service: AuthService;
-  let userRepository: jest.Mocked<Repository<User>>;
+  let usersRepository: jest.Mocked<UsersRepository> & { save: jest.Mock };
   let jwtService: jest.Mocked<JwtService>;
+
+  const mockUsersRepository = {
+    findByEmail: jest.fn(),
+    findByUsername: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+  };
+
+  const mockJwtService = {
+    sign: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         {
-          provide: getRepositoryToken(User),
-          useValue: {
-            findOne: jest.fn(),
-            create: jest.fn(),
-            save: jest.fn(),
-          },
+          provide: UsersRepository,
+          useValue: mockUsersRepository,
         },
         {
           provide: JwtService,
-          useValue: {
-            sign: jest.fn(),
-          },
+          useValue: mockJwtService,
         },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    userRepository = module.get<Repository<User>>(
-      getRepositoryToken(User),
-    ) as jest.Mocked<Repository<User>>;
-    jwtService = module.get<JwtService>(JwtService) as jest.Mocked<JwtService>;
+    usersRepository = module.get(UsersRepository);
+    jwtService = module.get(JwtService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -51,8 +56,8 @@ describe('AuthService', () => {
     it('should validate user and return token', async () => {
       const user = createMockUser();
 
-      userRepository.findOne.mockResolvedValue(user);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      usersRepository.findByEmail.mockResolvedValue(user);
+      (passwordUtil.comparePassword as jest.Mock).mockResolvedValue(true);
       jwtService.sign.mockReturnValue('token');
 
       const result = await service.validateUser({
@@ -62,10 +67,13 @@ describe('AuthService', () => {
 
       expect(result).toHaveProperty('access_token');
       expect(result).toHaveProperty('user');
+      expect(mockUsersRepository.findByEmail).toHaveBeenCalledWith(
+        'test@test.com',
+      );
     });
 
     it('should throw UnauthorizedException for invalid credentials', async () => {
-      userRepository.findOne.mockResolvedValue(null);
+      usersRepository.findByEmail.mockResolvedValue(null);
 
       await expect(
         service.validateUser({ email: 'test@test.com', password: 'wrong' }),
@@ -74,8 +82,8 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException for invalid password', async () => {
       const user = createMockUser();
-      userRepository.findOne.mockResolvedValue(user);
-      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+      usersRepository.findByEmail.mockResolvedValue(user);
+      (passwordUtil.comparePassword as jest.Mock).mockResolvedValue(false);
 
       await expect(
         service.validateUser({ email: 'example@email.com', password: 'wrong' }),
@@ -85,13 +93,15 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('should register a new user', async () => {
-      userRepository.findOne.mockResolvedValue(null);
-      userRepository.create.mockReturnValue(
-        createMockUser({ email: 'newUser@email.com' }),
+      const newUser = createMockUser({ email: 'newUser@email.com' });
+
+      usersRepository.findByEmail.mockResolvedValue(null);
+      usersRepository.findByUsername.mockResolvedValue(null);
+      usersRepository.create.mockResolvedValue(newUser);
+      (passwordUtil.hashPassword as jest.Mock).mockResolvedValue(
+        'hashedPassword',
       );
-      userRepository.save.mockResolvedValue(
-        createMockUser({ email: 'newUser@email.com' }),
-      );
+      jwtService.sign.mockReturnValue('token');
 
       const result = await service.register({
         email: 'newUser@email.com',
@@ -101,11 +111,17 @@ describe('AuthService', () => {
 
       expect(result).toHaveProperty('user');
       expect(result.user.email).toBe('newUser@email.com');
+      expect(mockUsersRepository.findByEmail).toHaveBeenCalledWith(
+        'newUser@email.com',
+      );
+      expect(mockUsersRepository.findByUsername).toHaveBeenCalledWith(
+        'newUser',
+      );
     });
 
-    it('should throw ConflictException if user already exists', async () => {
+    it('should throw ConflictException if email already exists', async () => {
       const existingUser = createMockUser({ email: 'email@email.com' });
-      userRepository.findOne.mockResolvedValue(existingUser);
+      usersRepository.findByEmail.mockResolvedValue(existingUser);
 
       await expect(
         service.register({
@@ -113,9 +129,21 @@ describe('AuthService', () => {
           username: 'user',
           password: 'password',
         }),
-      ).rejects.toThrow(
-        new ConflictException('User with this email already exists'),
-      );
+      ).rejects.toThrow(new ConflictException('Email already in use'));
+    });
+
+    it('should throw ConflictException if username already exists', async () => {
+      const existingUser = createMockUser({ username: 'existingUser' });
+      usersRepository.findByEmail.mockResolvedValue(null);
+      usersRepository.findByUsername.mockResolvedValue(existingUser);
+
+      await expect(
+        service.register({
+          email: 'new@email.com',
+          username: 'existingUser',
+          password: 'password',
+        }),
+      ).rejects.toThrow(new ConflictException('Username already in use'));
     });
   });
 
