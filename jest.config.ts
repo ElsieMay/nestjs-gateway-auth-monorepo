@@ -21,6 +21,6 @@ export default {
   testRegex: '.*\\.spec\\.ts$',
   projects: [
     '<rootDir>/apps/authentication/jest.config.ts',
-    '<rootDir>/apps/gateway/src/jest.config.ts',
+    '<rootDir>/apps/gateway/jest.config.ts',
   ],
 };
