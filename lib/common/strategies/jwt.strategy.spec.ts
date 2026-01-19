@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtPayload } from '../../config/jwt.config';
+import { Role } from '../../core/src/auth-domain/enums/roles.enum';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
@@ -10,12 +11,14 @@ describe('JwtStrategy', () => {
     sub: 'user-123',
     email: 'test@example.com',
     username: 'testuser',
+    roles: [Role.USER],
   };
 
   const mockExpectedUser = {
     userId: 'user-123',
     email: 'test@example.com',
     username: 'testuser',
+    roles: [Role.USER],
   };
 
   beforeEach(async () => {
@@ -44,13 +47,7 @@ describe('JwtStrategy', () => {
     });
 
     it('should map sub to userId', () => {
-      const payload: JwtPayload = {
-        sub: 'abc-xyz-123',
-        email: 'user@test.com',
-        username: 'user',
-      };
-
-      const result = strategy.validate(payload);
+      const result = strategy.validate(mockValidPayload);
 
       expect(result.userId).toBe('abc-xyz-123');
       expect(result).not.toHaveProperty('sub');
@@ -87,9 +84,6 @@ describe('JwtStrategy', () => {
     it('should accept payload with optional iat and exp fields', () => {
       const payload: JwtPayload = {
         ...mockValidPayload,
-        sub: 'user-456',
-        email: 'demo@example.com',
-        username: 'demo',
         iat: 1640995200,
         exp: 1641081600,
       };
@@ -100,6 +94,7 @@ describe('JwtStrategy', () => {
         userId: 'user-456',
         email: 'demo@example.com',
         username: 'demo',
+        roles: [Role.USER],
       });
     });
 

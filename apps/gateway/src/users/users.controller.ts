@@ -29,6 +29,7 @@ import {
   DeleteUserResponseDto,
   UserResponseDto,
 } from '../../../../lib/core/src/users-domain/dto/response/user-response.dto';
+import { Observable } from 'rxjs';
 
 interface UserRequest {
   userId: string;
@@ -60,7 +61,7 @@ export class UsersController {
     status: 403,
     description: 'Forbidden - Admin role required',
   })
-  findAll() {
+  findAll(): Observable<UserResponseDto[]> {
     return this.usersService.findAll();
   }
 
