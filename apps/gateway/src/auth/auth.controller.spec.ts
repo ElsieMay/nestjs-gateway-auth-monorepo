@@ -2,9 +2,9 @@ import { TestingModule, Test } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { ValidateUserDto } from '../../../../lib/core/src/auth/dto/validate-user.dto';
-import { LoginDto } from '../../../../lib/core/src/auth/dto/login.dto';
-import { RegisterDto } from '../../../../lib/core/src/auth/dto/register-auth.dto';
+import { ValidateUserDto } from '../../../../lib/core/src/auth-domain/dto/request/validate-user.dto';
+import { LoginDto } from '../../../../lib/core/src/auth-domain/dto/request/login.dto';
+import { RegisterDto } from '../../../../lib/core/src/auth-domain/dto/request/register-auth.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -31,7 +31,7 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should call authService with validate_user and credentials', () => {
+  it('should call authService with validate_user and credentials', async () => {
     const authService = controller['authService'];
     const validateUserSpy = jest.spyOn(authService, 'validateUser');
     const credentials: ValidateUserDto = {
@@ -39,12 +39,12 @@ describe('AuthController', () => {
       password: 'test',
     };
 
-    controller.validate_user(credentials);
+    await controller.validate_user(credentials);
 
     expect(validateUserSpy).toHaveBeenCalledWith(credentials);
   });
 
-  it('should call authService with register and registerDto', () => {
+  it('should call authService with register and registerDto', async () => {
     const authService = controller['authService'];
     const registerSpy = jest.spyOn(authService, 'register');
     const mockRegisterDto: RegisterDto = {
@@ -53,12 +53,12 @@ describe('AuthController', () => {
       password: 'test',
     };
 
-    controller.register(mockRegisterDto);
+    await controller.register(mockRegisterDto);
 
     expect(registerSpy).toHaveBeenCalledWith(mockRegisterDto);
   });
 
-  it('should call authService with login and loginDto', () => {
+  it('should call authService with login and loginDto', async () => {
     const authService = controller['authService'];
     const loginSpy = jest.spyOn(authService, 'login');
     const mockLoginDto: LoginDto = {
@@ -66,7 +66,7 @@ describe('AuthController', () => {
       password: 'test',
     };
 
-    controller.login(mockLoginDto);
+    await controller.login(mockLoginDto);
 
     expect(loginSpy).toHaveBeenCalledWith(mockLoginDto);
   });

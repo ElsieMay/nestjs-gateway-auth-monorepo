@@ -1,12 +1,30 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { LoggingInterceptor } from '../../../lib/common/interceptors/logging.interceptor';
+import { HttpExceptionFilter } from '../../../lib/common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  app.useGlobalInterceptors(new LoggingInterceptor());
+
+  const httpAdapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
+
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || '*',
+    credentials: true,
+  });
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -14,6 +32,8 @@ async function bootstrap() {
     .setDescription('API Gateway with JWT Authentication')
     .setVersion('1.0')
     .addBearerAuth()
+    .addTag('auth', 'Authentication related endpoints')
+    .addTag('profile', 'User management endpoints')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

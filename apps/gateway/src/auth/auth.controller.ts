@@ -1,9 +1,12 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LoginDto } from '../../../../lib/core/src/auth/dto/login.dto';
-import { RegisterDto } from '../../../../lib/core/src/auth/dto/register-auth.dto';
-import { ValidateUserDto } from '../../../../lib/core/src/auth/dto/validate-user.dto';
+import {
+  AuthResponseDto,
+  ValidateUserDto,
+  RegisterDto,
+  LoginDto,
+} from '../../../../lib/core/src/auth-domain';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -12,19 +15,39 @@ export class AuthController {
 
   @Post('validate_user')
   @ApiOperation({ summary: 'Validate user credentials' })
-  validate_user(@Body() credentials: ValidateUserDto) {
+  @ApiResponse({
+    status: 200,
+    description: 'User validated successfully',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  validate_user(
+    @Body() credentials: ValidateUserDto,
+  ): Promise<AuthResponseDto> {
     return this.authService.validateUser(credentials);
   }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
-  register(@Body() registerDto: RegisterDto) {
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({ status: 409, description: 'Email or username already in use' })
+  register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return this.authService.register(registerDto);
   }
 
   @Post('login')
   @ApiOperation({ summary: 'Login and get JWT token' })
-  login(@Body() loginDto: LoginDto) {
+  @ApiResponse({
+    status: 200,
+    description: 'User logged in successfully',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(loginDto);
   }
 }

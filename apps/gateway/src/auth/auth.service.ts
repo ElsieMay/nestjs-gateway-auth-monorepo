@@ -1,22 +1,37 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { LoginDto } from '../../../../lib/core/src/auth/dto/login.dto';
-import { RegisterDto } from '../../../../lib/core/src/auth/dto/register-auth.dto';
-import { ValidateUserDto } from '../../../../lib/core/src/auth/dto/validate-user.dto';
+import { BaseMicroserviceClient } from '../../../../lib/common/clients/base-microservice.client';
+import {
+  LoginDto,
+  AuthResponseDto,
+  RegisterDto,
+  ValidateUserDto,
+} from '../../../../lib/core/src/auth-domain';
+
+export interface IAuthService {
+  validateUser(dto: ValidateUserDto): Promise<AuthResponseDto>;
+  login(dto: LoginDto): Promise<AuthResponseDto>;
+  register(dto: RegisterDto): Promise<AuthResponseDto>;
+}
 
 @Injectable()
-export class AuthService {
-  constructor(@Inject('AUTH_SERVICE') private authClient: ClientProxy) {}
-
-  validateUser(credentials: ValidateUserDto) {
-    return this.authClient.send('validate_user', credentials);
+export class AuthService
+  extends BaseMicroserviceClient
+  implements IAuthService
+{
+  constructor(@Inject('AUTH_SERVICE') client: ClientProxy) {
+    super(client);
   }
 
-  login(loginDto: LoginDto) {
-    return this.authClient.send('login', loginDto);
+  async validateUser(credentials: ValidateUserDto): Promise<AuthResponseDto> {
+    return this.send<AuthResponseDto>('validateUser', credentials);
   }
 
-  register(registerDto: RegisterDto) {
-    return this.authClient.send('register', registerDto);
+  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+    return this.send<AuthResponseDto>('login', loginDto);
+  }
+
+  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
+    return this.send<AuthResponseDto>('register', registerDto);
   }
 }

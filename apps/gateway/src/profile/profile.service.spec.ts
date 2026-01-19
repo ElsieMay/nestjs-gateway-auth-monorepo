@@ -78,4 +78,100 @@ describe('ProfileService', () => {
       );
     });
   });
+
+  describe('getAdminData', () => {
+    it('should return admin data', async () => {
+      const userId = 'admin-user-id';
+      const mockTotalUsers = 100;
+      const mockActiveUsers = 80;
+
+      mockUserClient.send
+        .mockReturnValueOnce(of(mockTotalUsers))
+        .mockReturnValueOnce(of({ activeUsers: mockActiveUsers }));
+
+      const adminData = await service.getAdminData(userId);
+
+      expect(adminData).toEqual({
+        message: 'This is an admin-only route',
+        userId: userId,
+        adminData: {
+          totalUsers: mockTotalUsers,
+          activeUsers: mockActiveUsers,
+        },
+      });
+      expect(mockUserClient.send).toHaveBeenNthCalledWith(
+        1,
+        'get_user_count',
+        {},
+      );
+      expect(mockUserClient.send).toHaveBeenNthCalledWith(
+        2,
+        'get_user_stats',
+        {},
+      );
+    });
+
+    it('should handle errors in admin data retrieval', async () => {
+      const userId = 'admin-user-id';
+      const error = new Error('Microservice error');
+
+      mockUserClient.send.mockReturnValue(throwError(() => error));
+
+      await expect(service.getAdminData(userId)).rejects.toThrow(
+        'Microservice error',
+      );
+    });
+  });
+
+  describe('getUserCount', () => {
+    it('should return total user count', async () => {
+      const mockTotalUsers = 150;
+      mockUserClient.send.mockReturnValueOnce(of(mockTotalUsers));
+
+      const totalUsers = await (
+        service as unknown as { getUserCount: () => Promise<number> }
+      ).getUserCount();
+
+      expect(totalUsers).toBe(mockTotalUsers);
+      expect(mockUserClient.send).toHaveBeenCalledWith('get_user_count', {});
+    });
+
+    it('should handle errors in user count retrieval', async () => {
+      const error = new Error('Microservice error');
+      mockUserClient.send.mockReturnValueOnce(throwError(() => error));
+
+      await expect(
+        (
+          service as unknown as { getUserCount: () => Promise<number> }
+        ).getUserCount(),
+      ).rejects.toThrow('Microservice error');
+    });
+  });
+
+  describe('getActiveUserCount', () => {
+    it('should return active user count', async () => {
+      const mockActiveUsers = 75;
+      mockUserClient.send.mockReturnValueOnce(
+        of({ activeUsers: mockActiveUsers }),
+      );
+
+      const activeUsers = await (
+        service as unknown as { getActiveUserCount: () => Promise<number> }
+      ).getActiveUserCount();
+
+      expect(activeUsers).toBe(mockActiveUsers);
+      expect(mockUserClient.send).toHaveBeenCalledWith('get_user_stats', {});
+    });
+
+    it('should handle errors in active user count retrieval', async () => {
+      const error = new Error('Microservice error');
+      mockUserClient.send.mockReturnValueOnce(throwError(() => error));
+
+      await expect(
+        (
+          service as unknown as { getActiveUserCount: () => Promise<number> }
+        ).getActiveUserCount(),
+      ).rejects.toThrow('Microservice error');
+    });
+  });
 });
