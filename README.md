@@ -34,7 +34,7 @@ docker-compose up -d
 # 3. Test the API
 curl -X POST http://localhost:3000/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","username":"testuser","password":"Test123!"}'
+  -d '{"email":"newuser@example.com","username":"newuser","password":"Test123!"}'
 ```
 
 ### Option 2: Local Development
@@ -280,10 +280,12 @@ This project implements multiple security layers:
 - **Validation**: Request validation with class-validator
 - **Health Checks**: Service monitoring endpoints
 
-## 📝 License
-
 This project is [MIT licensed](LICENSE).
 
 ---
 
-\*\*Made with ❤️ and ⚡ by [Elsie Lawrie](https://github.com/elsiemay)
+<div align="center">
+
+### Made with ❤️ and ⚡ by [Elsie Lawrie](https://github.com/elsiemay)
+
+</div>
