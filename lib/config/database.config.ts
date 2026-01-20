@@ -7,5 +7,5 @@ export const databaseConfig = () => ({
   database: process.env.DB_NAME,
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   NODE_ENV: process.env.NODE_ENV || 'development',
-  synchronize: false,
+  synchronize: process.env.NODE_ENV !== 'production',
 });

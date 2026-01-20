@@ -13,6 +13,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - nestjs-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -24,13 +26,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: npm run start:auth
+    command: npm run start:prod:auth
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
@@ -44,24 +46,19 @@ services:
       - "3002:3002"
     networks:
       - nestjs-network
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3002/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
   
   gateway:
     container_name: nestjs-gateway
     build:
       context: .
       dockerfile: Dockerfile
-    command: npm run start:gateway
+    command: npm run start:prod:gateway
     restart: unless-stopped
     ports:
       - "3000:3000"
     depends_on:
       auth-service:
-        condition: service_healthy
+        condition: service_started
     environment:
       - NODE_ENV=production
       - GATEWAY_PORT=3000

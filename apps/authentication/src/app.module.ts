@@ -13,6 +13,21 @@ import { HealthController } from '../health/health.controller';
   controllers: [HealthController],
   imports: [
     TerminusModule,
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport:
+          process.env.NODE_ENV !== 'production'
+            ? {
+                target: 'pino-pretty',
+                options: {
+                  colorize: true,
+                  singleLine: true,
+                },
+              }
+            : undefined,
+        level: process.env.LOG_LEVEL || 'info',
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -34,7 +49,6 @@ import { HealthController } from '../health/health.controller';
       }),
       inject: [ConfigService],
     }),
-    LoggerModule,
     AuthUsersModule,
     AuthModule,
   ],

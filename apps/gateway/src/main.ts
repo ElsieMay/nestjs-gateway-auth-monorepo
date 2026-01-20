@@ -2,13 +2,10 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { LoggingInterceptor } from '../../../lib/common/interceptors/logging.interceptor';
 import { HttpExceptionFilter } from '../../../lib/common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  app.useLogger(app.get(Logger));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -17,8 +14,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
-  app.useGlobalInterceptors(new LoggingInterceptor(app.get(Logger)));
 
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
