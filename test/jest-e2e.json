@@ -1,9 +1,48 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "rootDir": "..",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "moduleNameMapper": {
+    "^@app/(.*)$": "<rootDir>/lib/$1",
+    "^@gateway/(.*)$": "<rootDir>/apps/gateway/src/$1",
+    "^@auth/(.*)$": "<rootDir>/apps/authentication/src/$1"
+  },
+  "collectCoverageFrom": [
+    "apps/gateway/src/**/*.controller.ts",
+    "lib/common/guards/*.guard.ts",
+    "lib/common/decorators/*.decorator.ts",
+    "!**/*.spec.ts",
+    "!**/*.e2e-spec.ts",
+    "!**/node_modules/**",
+    "!**/dist/**",
+    "!**/coverage/**",
+    "!**/coverage-e2e/**",
+    "!**/*.module.ts",
+    "!**/main.ts",
+    "!**/jest.config.ts"
+  ],
+  "coverageDirectory": "../coverage-e2e",
+  "coverageReporters": ["html", "text", "lcov", "json"],
+  "coveragePathIgnorePatterns": [
+    "/node_modules/",
+    "/dist/",
+    "/coverage/",
+    "/coverage-e2e/",
+    ".module.ts$",
+    "main.ts$",
+    ".service.ts$",
+    ".strategy.ts$",
+    ".filter.ts$",
+    ".interceptor.ts$",
+    ".util.ts$",
+    "constants.ts$",
+    "/clients/",
+    "/logging/",
+    "/utils/"
+  ],
+  "testTimeout": 30000
 }

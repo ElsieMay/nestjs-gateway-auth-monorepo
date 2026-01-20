@@ -32,6 +32,7 @@ Thumbs.db
 
 # Testing
 coverage/
+coverage-e2e/
 .nyc_output
 *.lcov
 

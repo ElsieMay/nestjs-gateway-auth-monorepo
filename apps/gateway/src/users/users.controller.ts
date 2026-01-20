@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
@@ -84,7 +85,7 @@ export class UsersController {
   findOne(@Param('id') id: string, @CurrentUser() user: UserRequest) {
     // Users can only view their own profile unless they're admin
     if (user.userId !== id && !user.roles.includes(Role.ADMIN)) {
-      return { message: 'Forbidden', statusCode: 403 };
+      throw new ForbiddenException('You can only access your own profile');
     }
     return this.usersService.findOne(id);
   }
@@ -108,7 +109,7 @@ export class UsersController {
   ) {
     // Users can only update their own profile unless they're admin
     if (user.userId !== id && !user.roles.includes(Role.ADMIN)) {
-      return { message: 'Forbidden', statusCode: 403 };
+      throw new ForbiddenException('You can only access your own profile');
     }
     return this.usersService.update(id, updateUserDto);
   }
@@ -132,7 +133,7 @@ export class UsersController {
   ) {
     // Users can only update their own password unless they're admin
     if (user.userId !== id && !user.roles.includes(Role.ADMIN)) {
-      return { message: 'Forbidden', statusCode: 403 };
+      throw new ForbiddenException('You can only access your own profile');
     }
     return this.usersService.updatePassword(id, updatePasswordDto.newPassword);
   }

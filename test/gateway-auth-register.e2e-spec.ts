@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../apps/gateway/src/app.module';
 import { ClientProxy } from '@nestjs/microservices';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import type { Server } from 'http';
 import { RegisterDto } from '../lib/core/src/auth-domain';
 
@@ -16,6 +16,12 @@ describe('Gateway Auth - Register (e2e)', () => {
     username: 'testuser',
     password: 'password123',
   };
+
+  interface ErrorResponse {
+    message: string;
+    error: string;
+    statusCode: number;
+  }
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -90,6 +96,60 @@ describe('Gateway Auth - Register (e2e)', () => {
         .post('/auth/register')
         .send(invalidRegisterDto)
         .expect(400);
+    });
+
+    it('should return 409 for duplicate email', () => {
+      const validRegisterDto: RegisterDto = {
+        email: 'existing@example.com',
+        username: 'newuser',
+        password: 'password123',
+      };
+
+      const mockError = {
+        statusCode: 409,
+        message: 'User with this email already exists',
+        error: 'Conflict',
+      };
+
+      jest
+        .spyOn(authServiceClient, 'send')
+        .mockReturnValue(throwError(() => mockError));
+
+      return request(app.getHttpServer() as Server)
+        .post('/auth/register')
+        .send(validRegisterDto)
+        .expect(409)
+        .expect((res) => {
+          expect((res.body as ErrorResponse).message).toContain('email');
+        });
+    });
+
+    it('should return 409 for duplicate username', () => {
+      const validRegisterDto: RegisterDto = {
+        email: 'newemail@example.com',
+        username: 'existinguser',
+        password: 'password123',
+      };
+
+      const mockError = {
+        statusCode: 409,
+        message: 'User with this username already exists',
+        error: 'Conflict',
+      };
+
+      jest
+        .spyOn(authServiceClient, 'send')
+        .mockReturnValue(throwError(() => mockError));
+
+      return request(app.getHttpServer() as Server)
+        .post('/auth/register')
+        .send(validRegisterDto)
+        .expect(409)
+        .expect((res) => {
+          expect((res.body as ErrorResponse).message).toContain(
+            'User with this username already exists',
+          );
+        });
     });
   });
 });
