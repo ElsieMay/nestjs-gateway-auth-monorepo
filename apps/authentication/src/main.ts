@@ -4,18 +4,15 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.TCP,
-      options: {
-        host: '0.0.0.0',
-        port: parseInt(process.env.AUTH_SERVICE_PORT || '3002', 10),
-      },
-    },
-  );
+  const app = await NestFactory.create(AppModule);
 
-  app.useLogger(app.get(Logger));
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: {
+      host: '0.0.0.0',
+      port: parseInt(process.env.AUTH_SERVICE_PORT || '3002', 10),
+    },
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -25,7 +22,9 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen();
+  await app.startAllMicroservices();
+
+  await app.listen(3003);
 
   Logger.log(
     `Authentication microservice is running on port ${process.env.AUTH_SERVICE_PORT || '3002'} (TCP)`,

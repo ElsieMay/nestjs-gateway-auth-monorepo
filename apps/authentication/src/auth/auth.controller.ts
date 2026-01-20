@@ -23,4 +23,9 @@ export class AuthController {
   async login(@Payload() loginDto: LoginDto) {
     return await this.authService.login(loginDto);
   }
+
+  @MessagePattern('health.check')
+  healthCheck() {
+    return this.authService.healthCheck();
+  }
 }

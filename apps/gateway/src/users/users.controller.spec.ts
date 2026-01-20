@@ -8,6 +8,7 @@ import {
   UpdateUserDto,
   UpdatePasswordDto,
 } from '../../../../lib/core/src/users-domain/dto/request/update-user.dto';
+import { ForbiddenException } from '@nestjs/common';
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -101,10 +102,11 @@ describe('UsersController', () => {
     });
 
     it('blocks access when user requests different profile without admin rights', () => {
-      const output = usersController.findOne(mockOtherUUID, regularUserContext);
+      expect(() =>
+        usersController.findOne(mockOtherUUID, regularUserContext),
+      ).toThrow(ForbiddenException);
 
       expect(serviceMock.findOne).not.toHaveBeenCalled();
-      expect(output).toEqual({ message: 'Forbidden', statusCode: 403 });
     });
 
     it('permits admin to access any user profile', () => {
@@ -147,14 +149,15 @@ describe('UsersController', () => {
     });
 
     it('blocks modification when user targets different profile without admin rights', () => {
-      const output = usersController.update(
-        mockOtherUUID,
-        updatePayload,
-        regularUserContext,
-      );
+      expect(() =>
+        usersController.update(
+          mockOtherUUID,
+          updatePayload,
+          regularUserContext,
+        ),
+      ).toThrow(ForbiddenException);
 
       expect(serviceMock.update).not.toHaveBeenCalled();
-      expect(output).toEqual({ message: 'Forbidden', statusCode: 403 });
     });
 
     it('permits admin to modify any user profile', () => {
@@ -198,14 +201,15 @@ describe('UsersController', () => {
     });
 
     it('blocks password change when user targets different account without admin rights', () => {
-      const output = usersController.updatePassword(
-        mockOtherUUID,
-        passwordPayload,
-        regularUserContext,
-      );
+      expect(() =>
+        usersController.updatePassword(
+          mockOtherUUID,
+          passwordPayload,
+          regularUserContext,
+        ),
+      ).toThrow(ForbiddenException);
 
       expect(serviceMock.updatePassword).not.toHaveBeenCalled();
-      expect(output).toEqual({ message: 'Forbidden', statusCode: 403 });
     });
 
     it('permits admin to change any user password', () => {

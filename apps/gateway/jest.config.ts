@@ -18,10 +18,15 @@ export default {
       },
     ],
   },
-  testMatch: ['<rootDir>/src/**/?(*.)+(spec|test).[jt]s?(x)'],
+  testMatch: [
+    '<rootDir>/src/**/?(*.)+(spec|test).[jt]s?(x)',
+    '<rootDir>/health/**/?(*.)+(spec|test).[jt]s?(x)',
+  ],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
+    '<rootDir>/health/**/*.ts',
     '!<rootDir>/src/**/*.d.ts',
+    '!<rootDir>/health/**/*.d.ts',
     '!<rootDir>/src/**/main.ts',
     '!<rootDir>/src/**/app.module.ts',
     '!<rootDir>/src/**/*.module.ts',

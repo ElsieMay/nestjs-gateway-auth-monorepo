@@ -1,23 +1,39 @@
 export default {
-  displayName: 'authentication',
+  displayName: 'gateway',
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testEnvironmentOptions: {},
   rootDir: '.',
-  transform: {
-    '^.+\\.(ts|js)$': 'ts-jest',
-  },
   moduleFileExtensions: ['ts', 'js'],
-  testMatch: ['<rootDir>/src/**/?(*.)+(spec|test).[jt]s?(x)'],
+  transform: {
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          module: 'commonjs',
+          moduleResolution: 'node',
+          esModuleInterop: true,
+          experimentalDecorators: true,
+          emitDecoratorMetadata: true,
+        },
+      },
+    ],
+  },
+  testMatch: [
+    '<rootDir>/src/**/?(*.)+(spec|test).[jt]s?(x)',
+    '<rootDir>/health/**/?(*.)+(spec|test).[jt]s?(x)',
+  ],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
+    '<rootDir>/health/**/*.ts',
     '!<rootDir>/src/**/*.d.ts',
+    '!<rootDir>/health/**/*.d.ts',
     '!<rootDir>/src/**/main.ts',
     '!<rootDir>/src/**/app.module.ts',
     '!<rootDir>/src/**/*.module.ts',
     '!<rootDir>/*.ts',
   ],
   coverageDirectory: '<rootDir>/coverage',
+  coveragePathIgnorePatterns: ['/node_modules/', '../../apps/authentication/'],
   moduleNameMapper: {
     '^@proj/core/(.*)$': '<rootDir>/../../lib/core/src/$1',
   },

@@ -4,8 +4,10 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { GatewayUsersModule } from './users/users.module';
 import { LoggerModule } from 'nestjs-pino';
+import { HealthController } from '../health/health.controller';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,

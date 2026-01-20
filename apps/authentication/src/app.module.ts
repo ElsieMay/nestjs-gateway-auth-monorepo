@@ -6,16 +6,20 @@ import { User } from '../../../lib/core/src/users-domain/entities/user.entity';
 import { AuthUsersModule } from './users/users.module';
 import { databaseConfig } from '../../../lib/config/database.config';
 import { LoggerModule } from 'nestjs-pino';
+import { TerminusModule } from '@nestjs/terminus';
+import { HealthController } from '../health/health.controller';
 
 @Module({
+  controllers: [HealthController],
   imports: [
+    TerminusModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
       load: [databaseConfig],
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule, TypeOrmModule.forFeature([User])],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get<string>('host'),

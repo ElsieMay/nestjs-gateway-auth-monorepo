@@ -33,6 +33,11 @@ export class AuthService {
     this.logger.setContext(AuthService.name);
   }
 
+  healthCheck(): { status: string } {
+    this.logger.info('Health check requested');
+    return { status: 'ok' };
+  }
+
   async validateUser(credentials: ValidateUserDto): Promise<AuthResponseDto> {
     const { email, password } = credentials;
     this.logger.info({ email }, 'Validating user credentials');

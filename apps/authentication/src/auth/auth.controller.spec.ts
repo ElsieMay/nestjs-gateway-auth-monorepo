@@ -88,4 +88,11 @@ describe('AuthController', () => {
       );
     });
   });
+
+  describe('healthCheck', () => {
+    it('should return status ok', () => {
+      const result = authController.healthCheck();
+      expect(result).toEqual({ status: 'ok' });
+    });
+  });
 });

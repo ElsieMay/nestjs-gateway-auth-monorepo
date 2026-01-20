@@ -195,4 +195,13 @@ describe('AuthService', () => {
       );
     });
   });
+
+  describe('healthCheck', () => {
+    it('should return health status', () => {
+      const result = service.healthCheck();
+
+      expect(result).toEqual({ status: 'ok' });
+      expect(mockLogger.info).toHaveBeenCalledWith('Health check requested');
+    });
+  });
 });
