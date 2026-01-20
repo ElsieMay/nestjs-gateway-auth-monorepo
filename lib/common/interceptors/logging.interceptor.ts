@@ -38,8 +38,4 @@ export class LoggingInterceptor implements NestInterceptor {
       }),
     );
   }
-
-  private sanitizeBody(body: any): any {
-    if (!body || typeof body !== 'object') return body;
-  }
 }

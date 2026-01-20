@@ -29,7 +29,7 @@ import { HealthController } from '../health/health.controller';
         database: configService.get<string>('database'),
         entities: [User],
         synchronize: configService.get<boolean>('synchronize'),
-        logging: process.env.NODE_ENV === 'development',
+        logging: configService.get<string>('NODE_ENV') === 'development',
         autoLoadEntities: true,
       }),
       inject: [ConfigService],

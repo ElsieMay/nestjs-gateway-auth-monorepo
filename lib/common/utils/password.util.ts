@@ -13,34 +13,40 @@ export async function comparePassword(
   return await bcrypt.compare(plainPassword, hashedPassword);
 }
 
-export function validatePasswordStrength(password: string): {
-  isValid: boolean;
-  errors: string[];
-} {
-  const errors: string[] = [];
+import { registerDecorator, ValidationOptions } from 'class-validator';
 
-  if (password.length < 8) {
-    errors.push('Password must be at least 8 characters long');
-  }
+export function ValidatePasswordStrength(
+  validationOptions?: ValidationOptions,
+) {
+  return function (object: object, propertyName: string) {
+    registerDecorator({
+      name: 'validatePasswordStrength',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: {
+        validate(value: any) {
+          if (typeof value !== 'string') return false;
 
-  if (!/[A-Z]/.test(password)) {
-    errors.push('Password must contain at least one uppercase letter');
-  }
+          // Your password strength validation logic
+          const hasUpperCase = /[A-Z]/.test(value);
+          const hasLowerCase = /[a-z]/.test(value);
+          const hasNumbers = /\d/.test(value);
+          const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+          const minLength = value.length >= 8;
 
-  if (!/[a-z]/.test(password)) {
-    errors.push('Password must contain at least one lowercase letter');
-  }
-
-  if (!/[0-9]/.test(password)) {
-    errors.push('Password must contain at least one number');
-  }
-
-  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    errors.push('Password must contain at least one special character');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors,
+          return (
+            hasUpperCase &&
+            hasLowerCase &&
+            hasNumbers &&
+            hasSpecialChar &&
+            minLength
+          );
+        },
+        defaultMessage() {
+          return 'Password must contain uppercase, lowercase, numbers, special characters, and be at least 8 characters long';
+        },
+      },
+    });
   };
 }

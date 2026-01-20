@@ -54,3 +54,6 @@ tmp/
 # Database
 *.sqlite
 *.db
+
+# Docker
+docker-compose.override.yml

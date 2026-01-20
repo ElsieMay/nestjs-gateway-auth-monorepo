@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength } from 'class-validator';
+import { SanitiseAndTrim } from '../../../../../common/decorators/sanitise.decorator';
 
 export class ValidateUserDto {
   @IsEmail()
+  @SanitiseAndTrim()
   @ApiProperty({ example: 'john@test.com' })
   email: string;
 
@@ -18,9 +20,11 @@ export class ValidatedUserDto {
   id: string;
 
   @IsEmail()
+  @SanitiseAndTrim()
   @ApiProperty({ example: 'john@test.com' })
   email: string;
 
   @IsString()
+  @SanitiseAndTrim()
   username: string;
 }

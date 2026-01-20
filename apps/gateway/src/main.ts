@@ -24,7 +24,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
   });
 
@@ -53,7 +53,10 @@ async function bootstrap() {
   );
 }
 
-bootstrap().catch((error) => {
-  console.error('Failed to start gateway:', error, 'Main');
-  process.exit(1);
+bootstrap().catch((err: unknown) => {
+  const errorMessage = err instanceof Error ? err.message : String(err);
+  const errorStack = err instanceof Error ? err.stack : undefined;
+
+  Logger.error(`Error starting gateway: ${errorMessage}`, errorStack, 'Main');
+  process.exit(1); // Exit on startup failure
 });
