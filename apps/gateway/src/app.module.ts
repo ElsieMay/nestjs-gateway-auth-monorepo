@@ -7,10 +7,18 @@ import { LoggerModule } from 'nestjs-pino';
 import { HealthController } from '../health/health.controller';
 import { TerminusModule } from '@nestjs/terminus';
 import { HttpModule } from '@nestjs/axios';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   controllers: [HealthController],
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     TerminusModule,
     HttpModule,
     ConfigModule.forRoot({
@@ -40,6 +48,12 @@ import { HttpModule } from '@nestjs/axios';
     AuthModule,
     ProfileModule,
     GatewayUsersModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
