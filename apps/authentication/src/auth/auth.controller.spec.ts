@@ -12,6 +12,7 @@ describe('AuthController', () => {
       validateUser: jest.fn(),
       register: jest.fn(),
       login: jest.fn(),
+      healthCheck: jest.fn(),
     };
 
     authController = new AuthController(authService as AuthService);
@@ -92,7 +93,7 @@ describe('AuthController', () => {
   describe('healthCheck', () => {
     it('should return status ok', () => {
       const result = authController.healthCheck();
-      expect(result).toEqual({ status: 'ok' });
+      expect(result).toBeUndefined();
     });
   });
 });

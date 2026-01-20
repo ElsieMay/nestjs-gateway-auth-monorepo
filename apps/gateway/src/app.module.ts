@@ -5,10 +5,14 @@ import { ProfileModule } from './profile/profile.module';
 import { GatewayUsersModule } from './users/users.module';
 import { LoggerModule } from 'nestjs-pino';
 import { HealthController } from '../health/health.controller';
+import { TerminusModule } from '@nestjs/terminus';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   controllers: [HealthController],
   imports: [
+    TerminusModule,
+    HttpModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
