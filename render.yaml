@@ -41,8 +41,6 @@ services:
           property: database
       - key: AUTH_SERVICE_PORT
         value: 3002
-      - key: JWT_SECRET
-        generateValue: true
       - key: JWT_EXPIRES_IN
         value: 1d
       - key: LOG_LEVEL
@@ -68,11 +66,6 @@ services:
           property: host
       - key: AUTH_SERVICE_PORT
         value: 3002
-      - key: JWT_SECRET
-        fromService:
-          name: nestjs-auth-service
-          type: web
-          envVarKey: JWT_SECRET
       - key: JWT_EXPIRES_IN
         value: 1d
       - key: LOG_LEVEL
