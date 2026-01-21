@@ -25,7 +25,7 @@ export class HealthController {
     );
     const authUrl =
       process.env.NODE_ENV === 'production'
-        ? `https://${authHost}`
+        ? `http://${authHost}:10000`
         : 'http://localhost:3003';
     return this.health.check([
       () => this.memory.checkRSS('memory', 300 * 1024 * 1024),
