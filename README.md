@@ -6,17 +6,22 @@
 ![NestJS](https://img.shields.io/badge/NestJS-11.0-red)
 ![Docker](https://img.shields.io/badge/Docker-ready-blue)
 
-A production-ready microservices architecture built with NestJS featuring an API Gateway and authentication service in a monorepo structure.
+## Description
 
-## 🎯 Project Highlights
+This project demonstrates a scalable microservices architecture using [NestJS](https://github.com/nestjs/nest) with the following components:
 
-- ✅ **Microservices Architecture** - API Gateway + Auth Service via TCP
-- ✅ **100% Test Coverage** - Comprehensive unit + E2E tests
-- ✅ **Security First** - JWT authentication, bcrypt hashing, input sanitisation, rate limiting
-- ✅ **TypeScript Best Practices** - Strict mode, proper types, clean architecture
-- ✅ **API Documentation** - Auto-generated Swagger/OpenAPI docs
-- ✅ **Production Ready** - Health checks, structured logging, error handling
-- ✅ **Docker Support** - Full containerisation with docker-compose
+- **API Gateway**: Exposes a public HTTP REST API
+- **Auth Service**: Dedicated authentication and authorisation microservice
+- **Shared Libraries**: Common utilities, types, and configurations
+
+**[View Live API Here](https://nestjs-gateway-auth-monorepo.onrender.com)**
+
+## Prerequisites
+
+- **Node.js**: v18.x or higher
+- **npm**: v9.x or higher
+- **PostgreSQL**: v14.x or higher (or use Docker)
+- **Docker** (optional but recommended): For containerised setup
 
 ## 🚀 Quick Start (< 5 minutes)
 
@@ -59,20 +64,21 @@ npm run start:auth        # Terminal 1
 npm run start:gateway     # Terminal 2
 ```
 
-## Description
+### Tech Stack
 
-This project demonstrates a scalable microservices architecture using [NestJS](https://github.com/nestjs/nest) with the following components:
-
-- **API Gateway**: Exposes a public HTTP REST API
-- **Auth Service**: Dedicated authentication and authorisation microservice
-- **Shared Libraries**: Common utilities, types, and configurations
-
-## Prerequisites
-
-- **Node.js**: v18.x or higher
-- **npm**: v9.x or higher
-- **PostgreSQL**: v14.x or higher (or use Docker)
-- **Docker** (optional but recommended): For containerised setup
+| Technology | Purpose          |
+| ---------- | ---------------- |
+| NestJS     | Framework        |
+| TypeScript | Language         |
+| PostgreSQL | Database         |
+| TypeORM    | ORM              |
+| JWT        | Authentication   |
+| Passport   | Auth middleware  |
+| Bcrypt     | Password hashing |
+| Jest       | Testing          |
+| Pino       | Logging          |
+| Swagger    | API docs         |
+| Docker     | Containerisation |
 
 ## Architecture
 
@@ -108,7 +114,7 @@ This monorepo uses NestJS microservices pattern with TCP transport for inter-ser
 │  │ - Password Hashing     │  │
 │  │ - JWT Token Generation │  │
 │  └────────────┬───────────┘  │
-└────────────────┼──────────────┘
+└────────────────┼─────────────┘
                  │
                  ▼
           ┌─────────────┐
@@ -117,28 +123,69 @@ This monorepo uses NestJS microservices pattern with TCP transport for inter-ser
           └─────────────┘
 ```
 
-### Technology Stack
+## 🏗️ Architectural Decisions
 
-- **Framework**: NestJS
-- **Language**: TypeScript
-- **Transport**: TCP (microservices communication)
-- **Database**: PostgreSQL with TypeORM
-- **Authentication**: JWT (JSON Web Tokens)
-- **Package Manager**: npm workspaces
-- **Containerisation**: Docker + Docker Compose
+This section explains the key architectural choices made in this project and the reasoning behind them.
 
-### Project Structure
+### Why Microservices?
 
-```
-├── apps/
-│   ├── gateway/          # API Gateway service
-│   └── authentication/   # Authentication service
-├── libs/
-│   ├── common/           # Shared utilities and helpers
-│   ├── core/             # Shared business logic and domain models
-│   └── config/           # Configuration management
-└── package.json          # Monorepo configuration
-```
+- **Separation of Concerns**: Authentication is a distinct domain with different security requirements
+- **Independent Scaling**: Auth service can scale independently based on login/registration load
+- **Security Isolation**: Credentials and hashing logic are isolated from public-facing gateway
+- **Team Autonomy**: Different teams can own gateway and auth services independently
+- **Technology Flexibility**: Can replace auth service with different implementation without affecting gateway
+
+### Why TCP Transport?
+
+- **Low Latency**: TCP is faster than HTTP for internal service-to-service calls
+- **Built-in NestJS Support**: Native microservices transport with minimal configuration
+- **Type Safety**: NestJS microservices preserve TypeScript types across services
+- **Simplicity**: No need for additional infrastructure like Redis or RabbitMQ
+- **Request-Response Pattern**: Perfect fit for synchronous auth operations e.g. login, validate
+
+**Trade-offs**: TCP requires services to be on the same network. For multi-region deployments, consider HTTP or gRPC.
+
+### Why JWT Authentication?
+
+- **Stateless**: No server-side session storage required, easier to scale horizontally
+- **Microservices-Friendly**: Token can be validated by any service without database lookup
+- **Mobile-Ready**: Standard approach for mobile apps and SPAs
+- **Cross-Domain**: Works across different domains/subdomains
+- **Industry Standard**: Well-understood, many libraries available
+
+**Security Note**: Short expiry (1 hour) limits impact of token theft. Consider refresh tokens for production.
+
+### Why PostgreSQL?
+
+- **ACID Compliance**: User authentication requires strict consistency
+- **Relational Data**: Users, roles, and permissions are inherently relational
+- **Mature Ecosystem**: Well-tested drivers, TypeORM support, easy backups
+- **JSON Support**: Can still store flexible data with JSONB when needed
+- **Performance**: Excellent performance for read-heavy auth queries with proper indexes
+
+### Why TypeORM?
+
+- **TypeScript Native**: First-class TypeScript support with decorators
+- **NestJS Integration**: Official @nestjs/typeorm package
+- **Migrations**: Built-in migration system for schema versioning
+- **Active Record & Data Mapper**: Supports both patterns
+- **Repository Pattern**: Clean separation of data access logic
+
+### Why Shared Libraries?
+
+- **DRY Principle**: JWT guards, logging, DTOs used by both services
+- **Consistency**: Same validation rules across gateway and auth service
+- **Maintainability**: Fix bugs once, applies everywhere
+- **Clear Boundaries**: Explicit API between shared and service-specific code
+
+### Trade-offs and Future Improvements
+
+- Add refresh token rotation for better security
+- Implement caching layer (Redis) for frequently accessed user data
+- Add API versioning for backwards compatibility
+- Implement distributed tracing with OpenTelemetry
+- Add event-driven patterns for user activity notifications
+- Consider gRPC for better performance and type safety
 
 ## API Documentation
 
@@ -243,22 +290,6 @@ npm run test:e2e:cov
 # Watch mode
 npm run test:watch
 ```
-
-### Tech Stack
-
-| Technology | Purpose          |
-| ---------- | ---------------- |
-| NestJS     | Framework        |
-| TypeScript | Language         |
-| PostgreSQL | Database         |
-| TypeORM    | ORM              |
-| JWT        | Authentication   |
-| Passport   | Auth middleware  |
-| Bcrypt     | Password hashing |
-| Jest       | Testing          |
-| Pino       | Logging          |
-| Swagger    | API docs         |
-| Docker     | Containerisation |
 
 ## Resources
 
