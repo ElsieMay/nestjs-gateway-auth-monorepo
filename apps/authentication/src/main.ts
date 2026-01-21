@@ -8,7 +8,7 @@ async function bootstrap() {
 
   // Start HTTP server for health checks (Render requirement)
   const httpPort = parseInt(process.env.PORT || '10000', 10);
-  
+
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
@@ -36,7 +36,6 @@ async function bootstrap() {
     `HTTP server listening on port ${httpPort} for health checks`,
     'Main',
   );
-}
 }
 
 bootstrap().catch((err: unknown) => {
