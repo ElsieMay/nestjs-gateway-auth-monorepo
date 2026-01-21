@@ -15,6 +15,9 @@ COPY . .
 # Build both applications
 RUN npm run build:gateway && npm run build:auth
 
+# List dist contents for debugging
+RUN ls -la dist/
+
 # Production stage
 FROM node:20-alpine
 
@@ -24,11 +27,10 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy built applications from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
 
 # Expose ports
 EXPOSE 3000 3002
