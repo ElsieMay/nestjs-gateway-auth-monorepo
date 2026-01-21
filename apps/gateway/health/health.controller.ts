@@ -19,10 +19,14 @@ export class HealthController {
   @Get()
   @HealthCheck()
   async publicCheck() {
-    const authUrl = this.configService.get<string>(
-      'AUTH_SERVICE_URL',
-      'http://localhost:3003',
+    const authHost = this.configService.get<string>(
+      'AUTH_SERVICE_HOST',
+      'localhost',
     );
+    const authUrl =
+      process.env.NODE_ENV === 'production'
+        ? `https://${authHost}`
+        : 'http://localhost:3003';
     return this.health.check([
       () => this.memory.checkRSS('memory', 300 * 1024 * 1024),
       () => this.memory.checkHeap('memory_heap', 200 * 1024 * 1024),
