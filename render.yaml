@@ -59,6 +59,11 @@ services:
           property: host
       - key: AUTH_SERVICE_PORT
         value: 3002
+      - key: AUTH_SERVICE_URL
+        fromService:
+          name: nestjs-auth-service
+          type: web
+          property: url
       - key: JWT_EXPIRES_IN
         value: 1d
       - key: LOG_LEVEL
