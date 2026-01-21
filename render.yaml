@@ -3,6 +3,7 @@ services:
   - type: web
     name: nestjs-auth-service
     env: docker
+    region: frankfurt
     dockerfilePath: ./Dockerfile
     dockerCommand: npm run start:prod:auth
     plan: free
@@ -41,6 +42,7 @@ services:
   - type: web
     name: nestjs-gateway
     env: docker
+    region: frankfurt
     dockerfilePath: ./Dockerfile
     dockerCommand: npm run start:prod:gateway
     plan: free
