@@ -23,7 +23,7 @@ This project demonstrates a scalable microservices architecture using [NestJS](h
 - **PostgreSQL**: v14.x or higher (or use Docker)
 - **Docker** (optional but recommended): For containerised setup
 
-## 🚀 Quick Start (< 5 minutes)
+## Quick Start (< 5 minutes)
 
 ### Option 1: Using Docker (Recommended)
 
@@ -64,21 +64,30 @@ npm run start:auth        # Terminal 1
 npm run start:gateway     # Terminal 2
 ```
 
-### Tech Stack
+## Tech Stack
 
-| Technology | Purpose          |
-| ---------- | ---------------- |
-| NestJS     | Framework        |
-| TypeScript | Language         |
-| PostgreSQL | Database         |
-| TypeORM    | ORM              |
-| JWT        | Authentication   |
-| Passport   | Auth middleware  |
-| Bcrypt     | Password hashing |
-| Jest       | Testing          |
-| Pino       | Logging          |
-| Swagger    | API docs         |
-| Docker     | Containerisation |
+### API Layer
+
+[![NestJS](https://img.shields.io/badge/NestJS-%23E0235C.svg?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/) Enterprise structure for microservices/decorators  
+[![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)]() Type safety across shared libs/services  
+[![Swagger](https://img.shields.io/badge/Swagger-%23F7F7F7.svg?style=for-the-badge&logo=swagger&logoColor=black)]() Auto-generated API docs
+
+### Data Layer
+
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)]() ACID-compliant relational storage  
+[![TypeORM](https://img.shields.io/badge/TypeORM-%23303333.svg?style=for-the-badge&logo=typeorm&logoColor=white)]() Native TS ORM with migrations
+
+### Auth Layer
+
+[![JWT](https://img.shields.io/badge/JWT-%2300D1B2.svg?style=for-the-badge&logo=json-web-tokens&logoColor=white)]() Stateless token auth across services  
+[![Passport](https://img.shields.io/badge/Passport-282C34.svg?style=for-the-badge&logo=passport&logoColor=white)]() Battle-tested auth strategies  
+[![Bcrypt](https://img.shields.io/badge/Bcrypt-%23A07F65.svg?style=for-the-badge&logo=bcrypt&logoColor=white)]() Secure password hashing
+
+### DevOps Layer
+
+[![Docker](https://img.shields.io/badge/Docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)]() Consistent dev/prod environments  
+[![Pino](https://img.shields.io/badge/Pino-%23008000.svg?style=for-the-badge&logo=pino&logoColor=white)]() Low-overhead structured logging  
+[![Jest](https://img.shields.io/badge/Jest-%23C83E94.svg?style=for-the-badge&logo=jest&logoColor=white)]() Fast TS unit/integration testing
 
 ## Architecture
 
@@ -123,60 +132,57 @@ This monorepo uses NestJS microservices pattern with TCP transport for inter-ser
           └─────────────┘
 ```
 
-## 🏗️ Architectural Decisions
+## Architectural Decisions
 
 This section explains the key architectural choices made in this project and the reasoning behind them.
 
-### Why Microservices?
+## Why Microservices?
 
-- **Separation of Concerns**: Authentication is a distinct domain with different security requirements
-- **Independent Scaling**: Auth service can scale independently based on login/registration load
-- **Security Isolation**: Credentials and hashing logic are isolated from public-facing gateway
-- **Team Autonomy**: Different teams can own gateway and auth services independently
-- **Technology Flexibility**: Can replace auth service with different implementation without affecting gateway
+[![Separation of Concerns](https://img.shields.io/badge/Separation%20of%20Concerns-%23007ACC.svg?style=for-the-badge)]() Authentication as distinct security domain  
+[![Independent Scaling](https://img.shields.io/badge/Independent%20Scaling-%23F7B900.svg?style=for-the-badge)]() Auth scales to login loads alone  
+[![Security Isolation](https://img.shields.io/badge/Security%20Isolation-%23FF6B35.svg?style=for-the-badge)]() Credentials isolated from gateway  
+[![Team Autonomy](https://img.shields.io/badge/Team%20Autonomy-%23850C9C.svg?style=for-the-badge)]() Teams own services independently  
+[![Technology Flexibility](https://img.shields.io/badge/Tech%20Flexibility-%2328A745.svg?style=for-the-badge)]() Swap auth without gateway changes
 
-### Why TCP Transport?
+## TCP Transport
 
-- **Low Latency**: TCP is faster than HTTP for internal service-to-service calls
-- **Built-in NestJS Support**: Native microservices transport with minimal configuration
-- **Type Safety**: NestJS microservices preserve TypeScript types across services
-- **Simplicity**: No need for additional infrastructure like Redis or RabbitMQ
-- **Request-Response Pattern**: Perfect fit for synchronous auth operations e.g. login, validate
+[![Low Latency](https://img.shields.io/badge/Low%20Latency-%2300D1B2.svg?style=for-the-badge)]() Faster than HTTP service-to-service  
+[![NestJS Native](https://img.shields.io/badge/NestJS%20Native-%23E0235C.svg?style=for-the-badge&logo=nestjs)]() Minimal setup transport  
+[![Type Safety](https://img.shields.io/badge/Type%20Safety-%23007ACC.svg?style=for-the-badge&logo=typescript)]() TS types preserved across services  
+[![Simple](https://img.shields.io/badge/Simple-%2328A745.svg?style=for-the-badge)]() No Redis/RabbitMQ needed  
+[![Request-Response](https://img.shields.io/badge/Request-Response-%23F7B900.svg?style=for-the-badge)]() Perfect for sync auth ops
 
-**Trade-offs**: TCP requires services to be on the same network. For multi-region deployments, consider HTTP or gRPC.
+## JWT Authentication
 
-### Why JWT Authentication?
-
-- **Stateless**: No server-side session storage required, easier to scale horizontally
-- **Microservices-Friendly**: Token can be validated by any service without database lookup
-- **Mobile-Ready**: Standard approach for mobile apps and SPAs
-- **Cross-Domain**: Works across different domains/subdomains
-- **Industry Standard**: Well-understood, many libraries available
+[![Stateless](https://img.shields.io/badge/Stateless-%2300D1B2.svg?style=for-the-badge&logo=json-web-tokens)]() Horizontal scaling, no sessions  
+[![Microservices](https://img.shields.io/badge/Microservices-%23F7B900.svg?style=for-the-badge)]() Any service validates tokens  
+[![Mobile Ready](https://img.shields.io/badge/Mobile%20Ready-%2328A745.svg?style=for-the-badge)]() SPAs + mobile standard  
+[![Cross-Domain](https://img.shields.io/badge/Cross-Domain-%23850C9C.svg?style=for-the-badge)]() Works across domains
 
 **Security Note**: Short expiry (1 hour) limits impact of token theft. Consider refresh tokens for production.
 
-### Why PostgreSQL?
+## PostgreSQL
 
-- **ACID Compliance**: User authentication requires strict consistency
-- **Relational Data**: Users, roles, and permissions are inherently relational
-- **Mature Ecosystem**: Well-tested drivers, TypeORM support, easy backups
-- **JSON Support**: Can still store flexible data with JSONB when needed
-- **Performance**: Excellent performance for read-heavy auth queries with proper indexes
+[![ACID Compliance](https://img.shields.io/badge/ACID%20Compliance-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)]() Strict consistency for auth  
+[![Relational Data](https://img.shields.io/badge/Relational%20Data-%23436EEE.svg?style=for-the-badge&logo=postgresql)]() Perfect for users/roles/permissions  
+[![Mature Ecosystem](https://img.shields.io/badge/Mature%20Ecosystem-%2328A745.svg?style=for-the-badge&logo=postgresql)]() TypeORM + battle-tested drivers  
+[![JSONB Support](https://img.shields.io/badge/JSONB%20Support-%2300D1B2.svg?style=for-the-badge&logo=postgresql)]() Flexible data when needed  
+[![Performance](https://img.shields.io/badge/Performance-%23F7B900.svg?style=for-the-badge&logo=postgresql)]() Read-heavy auth queries optimized
 
-### Why TypeORM?
+## TypeORM
 
-- **TypeScript Native**: First-class TypeScript support with decorators
-- **NestJS Integration**: Official @nestjs/typeorm package
-- **Migrations**: Built-in migration system for schema versioning
-- **Active Record & Data Mapper**: Supports both patterns
-- **Repository Pattern**: Clean separation of data access logic
+[![TypeScript Native](https://img.shields.io/badge/TS%20Native-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)]() Decorators + first-class support  
+[![NestJS Integration](https://img.shields.io/badge/NestJS%20Official-%23E0235C.svg?style=for-the-badge&logo=nestjs&logoColor=white)]() @nestjs/typeorm package  
+[![Migrations](https://img.shields.io/badge/Migrations-%2328A745.svg?style=for-the-badge&logo=typeorm)]() Built-in schema versioning  
+[![Active%20Record](https://img.shields.io/badge/Active%20Record-%23F7B900.svg?style=for-the-badge&logo=typeorm)]() + Data Mapper patterns  
+[![Repository Pattern](https://img.shields.io/badge/Repository%20Pattern-%2300D1B2.svg?style=for-the-badge&logo=typeorm)]() Clean data access layer
 
-### Why Shared Libraries?
+## Shared Libraries
 
-- **DRY Principle**: JWT guards, logging, DTOs used by both services
-- **Consistency**: Same validation rules across gateway and auth service
-- **Maintainability**: Fix bugs once, applies everywhere
-- **Clear Boundaries**: Explicit API between shared and service-specific code
+[![DRY Principle](https://img.shields.io/badge/DRY-%2328A745.svg?style=for-the-badge&logo=nodejs)]() JWT guards/DTOs reused everywhere  
+[![Consistency](https://img.shields.io/badge/Consistency-%2300D1B2.svg?style=for-the-badge&logo=nodejs)]() Uniform validation rules  
+[![Maintainability](https://img.shields.io/badge/Maintainable-%23F7B900.svg?style=for-the-badge&logo=nodejs)]() Fix once, deploy everywhere  
+[![Clear Boundaries](https://img.shields.io/badge/Clear%20Boundaries-%23E0235C.svg?style=for-the-badge&logo=nodejs)]() Explicit shared/specific APIs
 
 ### Trade-offs and Future Improvements
 
@@ -186,6 +192,7 @@ This section explains the key architectural choices made in this project and the
 - Implement distributed tracing with OpenTelemetry
 - Add event-driven patterns for user activity notifications
 - Consider gRPC for better performance and type safety
+- TCP requires services to be on the same network
 
 ## API Documentation
 
@@ -270,7 +277,7 @@ Response:
 }
 ```
 
-## 🧪 Testing
+## Testing
 
 Run comprehensive test suite with 100% coverage:
 
