@@ -5,13 +5,14 @@ import { ProfileModule } from './profile/profile.module';
 import { GatewayUsersModule } from './users/users.module';
 import { LoggerModule } from 'nestjs-pino';
 import { HealthController } from '../health/health.controller';
+import { AppController } from './app.controller';
 import { TerminusModule } from '@nestjs/terminus';
 import { HttpModule } from '@nestjs/axios';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
-  controllers: [HealthController],
+  controllers: [AppController, HealthController],
   imports: [
     ThrottlerModule.forRoot([
       {
