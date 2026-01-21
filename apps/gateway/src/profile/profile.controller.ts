@@ -38,7 +38,7 @@ export class ProfileController {
     description: 'Returns user profile',
     type: ProfileResponseDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
   async getProfile(
     @CurrentUser() user: UserRequest,
   ): Promise<ProfileResponseDto> {
@@ -53,7 +53,7 @@ export class ProfileController {
     description: 'Returns admin data',
     type: AdminResponseDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
   @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async getAdminData(
     @CurrentUser() user: UserRequest,

@@ -62,7 +62,7 @@ describe('UsersController', () => {
     jest.clearAllMocks();
   });
 
-  describe('controller initialization', () => {
+  describe('controller initialisation', () => {
     it('controller instance should exist', () => {
       expect(usersController).toBeDefined();
     });
@@ -230,7 +230,7 @@ describe('UsersController', () => {
     });
   });
 
-  describe('remove endpoint', () => {
+  describe('delete user endpoint', () => {
     it('deletes user account successfully', () => {
       const mockObservable = of(sampleUserDto);
       serviceMock.remove.mockReturnValue(mockObservable);

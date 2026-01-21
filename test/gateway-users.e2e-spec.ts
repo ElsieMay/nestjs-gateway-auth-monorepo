@@ -105,7 +105,7 @@ describe('Gateway Users Controller (e2e)', () => {
         });
     });
 
-    it('should return 401 for unauthorized access', () => {
+    it('should return 401 for unauthorised access', () => {
       return request(app.getHttpServer() as Server)
         .get('/users')
         .expect(401);
@@ -184,7 +184,7 @@ describe('Gateway Users Controller (e2e)', () => {
         });
     });
 
-    it('should return 401 for unauthorized access', () => {
+    it('should return 401 for unauthorised access', () => {
       return request(app.getHttpServer() as Server)
         .get('/users/1')
         .expect(401);
@@ -279,7 +279,7 @@ describe('Gateway Users Controller (e2e)', () => {
         });
     });
 
-    it('should return 401 for unauthorized access', () => {
+    it('should return 401 for unauthorised access', () => {
       return request(app.getHttpServer() as Server)
         .patch('/users/1')
         .send({ username: 'updatedUser' })
@@ -369,7 +369,7 @@ describe('Gateway Users Controller (e2e)', () => {
         });
     });
 
-    it('should return 401 for unauthorized access', () => {
+    it('should return 401 for unauthorised access', () => {
       return request(app.getHttpServer() as Server)
         .patch('/users/1/password')
         .send({ newPassword: 'NewStrongP@ssw0rd' })
@@ -414,7 +414,7 @@ describe('Gateway Users Controller (e2e)', () => {
         .expect(403);
     });
 
-    it('should return 401 for unauthorized access', () => {
+    it('should return 401 for unauthorised access', () => {
       return request(app.getHttpServer() as Server)
         .delete('/users/1')
         .expect(401);

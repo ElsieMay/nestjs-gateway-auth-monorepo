@@ -56,7 +56,7 @@ export class UsersController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized',
+    description: 'Unauthorised',
   })
   @ApiResponse({
     status: 403,
@@ -76,7 +76,7 @@ export class UsersController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized',
+    description: 'Unauthorised',
   })
   @ApiResponse({
     status: 404,
@@ -99,7 +99,7 @@ export class UsersController {
     description: 'User updated successfully',
     type: UserResponseDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'User not found' })
   update(
@@ -123,7 +123,7 @@ export class UsersController {
     description: 'Password updated successfully',
     type: UserResponseDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'User not found' })
   updatePassword(
@@ -147,7 +147,7 @@ export class UsersController {
     description: 'User deleted successfully',
     type: DeleteUserResponseDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 401, description: 'Unauthorised' })
   @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   @ApiResponse({ status: 404, description: 'User not found' })
   remove(@Param('id') id: string) {

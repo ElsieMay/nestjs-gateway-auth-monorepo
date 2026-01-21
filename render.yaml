@@ -1,0 +1,76 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: nestjs-auth-db
+    env: docker
+    plan: free
+    databases:
+      - name: nestjs_auth
+        user: postgres
+
+  # Authentication Service
+  - type: web
+    name: nestjs-auth-service
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: npm run start:prod:auth
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_HOST
+        fromDatabase:
+          name: nestjs_auth
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: nestjs_auth
+          property: port
+      - key: DB_USERNAME
+        fromDatabase:
+          name: nestjs_auth
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: nestjs_auth
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: nestjs_auth
+          property: database
+      - key: AUTH_SERVICE_PORT
+        value: 3002
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: LOG_LEVEL
+        value: info
+
+  # API Gateway
+  - type: web
+    name: nestjs-gateway
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: npm run start:prod:gateway
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GATEWAY_PORT
+        value: 10000
+      - key: AUTH_SERVICE_HOST
+        fromService:
+          name: nestjs-auth-service
+          type: web
+          property: host
+      - key: AUTH_SERVICE_PORT
+        value: 3002
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: LOG_LEVEL
+        value: info

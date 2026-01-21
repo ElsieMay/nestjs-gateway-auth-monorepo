@@ -24,7 +24,7 @@ export const VALIDATION_MESSAGES = {
 
 // HTTP Status Messages
 export const HTTP_MESSAGES = {
-  UNAUTHORIZED: 'Unauthorized access',
+  UNAUTHORISED: 'Unauthorised access',
   FORBIDDEN: 'Forbidden resource',
   NOT_FOUND: 'Resource not found',
   INTERNAL_ERROR: 'Internal server error',

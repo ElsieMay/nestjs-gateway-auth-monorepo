@@ -16,7 +16,7 @@ A production-ready microservices architecture built with NestJS featuring an API
 - ✅ **TypeScript Best Practices** - Strict mode, proper types, clean architecture
 - ✅ **API Documentation** - Auto-generated Swagger/OpenAPI docs
 - ✅ **Production Ready** - Health checks, structured logging, error handling
-- ✅ **Docker Support** - Full containerization with docker-compose
+- ✅ **Docker Support** - Full containerisation with docker-compose
 
 ## 🚀 Quick Start (< 5 minutes)
 
@@ -72,7 +72,7 @@ This project demonstrates a scalable microservices architecture using [NestJS](h
 - **Node.js**: v18.x or higher
 - **npm**: v9.x or higher
 - **PostgreSQL**: v14.x or higher (or use Docker)
-- **Docker** (optional but recommended): For containerized setup
+- **Docker** (optional but recommended): For containerised setup
 
 ## Architecture
 
@@ -125,7 +125,7 @@ This monorepo uses NestJS microservices pattern with TCP transport for inter-ser
 - **Database**: PostgreSQL with TypeORM
 - **Authentication**: JWT (JSON Web Tokens)
 - **Package Manager**: npm workspaces
-- **Containerization**: Docker + Docker Compose
+- **Containerisation**: Docker + Docker Compose
 
 ### Project Structure
 
@@ -193,7 +193,7 @@ Response: 200 OK
 
 ```
 GET /auth/profile
-Authorization: Bearer {access_token}
+Authorisation: Bearer {access_token}
 
 Response: 200 OK
 {
@@ -258,7 +258,7 @@ npm run test:watch
 | Jest       | Testing          |
 | Pino       | Logging          |
 | Swagger    | API docs         |
-| Docker     | Containerization |
+| Docker     | Containerisation |
 
 ## Resources
 
