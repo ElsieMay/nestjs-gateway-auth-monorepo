@@ -1,12 +1,10 @@
 services:
   # PostgreSQL Database
-  - type: pserv
+  - type: postgres
     name: nestjs-auth-db
-    env: docker
     plan: free
-    databases:
-      - name: nestjs_auth
-        user: postgres
+    databaseName: nestjs_auth
+    user: postgres
 
   # Authentication Service
   - type: web
@@ -21,23 +19,23 @@ services:
         value: production
       - key: DB_HOST
         fromDatabase:
-          name: nestjs_auth
+          name: nestjs-auth-db
           property: host
       - key: DB_PORT
         fromDatabase:
-          name: nestjs_auth
+          name: nestjs-auth-db
           property: port
       - key: DB_USERNAME
         fromDatabase:
-          name: nestjs_auth
+          name: nestjs-auth-db
           property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: nestjs_auth
+          name: nestjs-auth-db
           property: password
       - key: DB_NAME
         fromDatabase:
-          name: nestjs_auth
+          name: nestjs-auth-db
           property: database
       - key: AUTH_SERVICE_PORT
         value: 3002
