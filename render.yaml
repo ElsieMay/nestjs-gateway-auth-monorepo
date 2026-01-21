@@ -69,7 +69,10 @@ services:
       - key: AUTH_SERVICE_PORT
         value: 3002
       - key: JWT_SECRET
-        sync: false
+        fromService:
+          name: nestjs-auth-service
+          type: web
+          envVarKey: JWT_SECRET
       - key: JWT_EXPIRES_IN
         value: 1d
       - key: LOG_LEVEL
