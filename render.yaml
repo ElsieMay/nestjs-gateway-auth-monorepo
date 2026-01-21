@@ -1,11 +1,4 @@
 services:
-  # PostgreSQL Database
-  - type: postgres
-    name: nestjs-auth-db
-    plan: free
-    databaseName: nestjs_auth
-    user: postgres
-
   # Authentication Service
   - type: web
     name: nestjs-auth-service
