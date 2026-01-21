@@ -6,6 +6,9 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Start HTTP server for health checks (Render requirement)
+  const httpPort = parseInt(process.env.PORT || '10000', 10);
+  
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
@@ -23,11 +26,17 @@ async function bootstrap() {
   );
 
   await app.startAllMicroservices();
+  await app.listen(httpPort); // Listen on HTTP for health checks
 
   Logger.log(
     `Authentication microservice is running on port ${process.env.AUTH_SERVICE_PORT} (TCP)`,
     'Main',
   );
+  Logger.log(
+    `HTTP server listening on port ${httpPort} for health checks`,
+    'Main',
+  );
+}
 }
 
 bootstrap().catch((err: unknown) => {
