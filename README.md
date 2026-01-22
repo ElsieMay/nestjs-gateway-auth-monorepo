@@ -16,6 +16,17 @@ This project demonstrates a scalable microservices architecture using [NestJS](h
 
 **[View Live API Here](https://lucky-nature-production.up.railway.app)**
 
+<!-- \*\*[Video Walkthrough in Swagger](<div> -->
+<a href="https://www.loom.com/share/36a8404215844f7b900e9ea8d60129aa">
+
+<p>Video Walkthrough in Swagger</p>
+</a>
+<a href="https://www.loom.com/share/36a8404215844f7b900e9ea8d60129aa">
+<img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/36a8404215844f7b900e9ea8d60129aa-9f2b0f768b10e706-full-play.gif#t=0.1">
+</a>
+<!-- </div>)
+** -->
+
 ## Prerequisites
 
 - **Node.js**: v18.x or higher
