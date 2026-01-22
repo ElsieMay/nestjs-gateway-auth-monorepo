@@ -14,7 +14,7 @@ This project demonstrates a scalable microservices architecture using [NestJS](h
 - **Auth Service**: Dedicated authentication and authorisation microservice
 - **Shared Libraries**: Common utilities, types, and configurations
 
-**[View Live API Here](https://nestjs-gateway-auth-monorepo.onrender.com)**
+**[View Live API Here](https://lucky-nature-production.up.railway.app)**
 
 ## Prerequisites
 
